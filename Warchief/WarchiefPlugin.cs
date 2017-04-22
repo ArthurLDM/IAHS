@@ -29,11 +29,14 @@ namespace Warchief
         public Version Version => new Version(0, 6, 0);
         public System.Windows.Controls.MenuItem MenuItem => null;
 
+
+        private bool gameStarted = false;
+        private bool mulliganDone = false;
+
         void IPlugin.OnButtonPress()
         {
             /*NOP*/
         }
-
 
         void IPlugin.OnLoad()
         {
@@ -49,6 +52,22 @@ namespace Warchief
                 keyCommands.Add(new HotKey(Keys.Z), this.Select);
                 keyCommands.Add(new HotKey(Keys.X), this.Unselect);
             }
+
+            GameEvents.OnGameStart.Add(() => { gameStarted = true;  });
+            GameEvents.OnTurnStart.Add(a => IAHS.TurnStart());
+            GameEvents.OnGameEnd.Add(() =>
+            {
+                gameStarted = false;
+                IAHS.GameEnd();
+            });
+
+            mulliganDone = CoreAPI.Game.IsMulliganDone;
+            gameStarted = mulliganDone && !CoreAPI.Game.IsInMenu;
+
+            if (!mulliganDone)
+                IAHS.GameEnd();
+            else
+                IAHS.GameStart();
         }
 
         void IPlugin.OnUnload()
@@ -94,7 +113,18 @@ namespace Warchief
                 this.areHotkeysRegistered = false;
             }
 
-            GameEvents.OnGameStart.Add(GameStart());
+
+
+            if (gameStarted)
+            {
+                if (!mulliganDone && CoreAPI.Game.IsMulliganDone)
+                    IAHS.GameStart();
+                mulliganDone = CoreAPI.Game.IsMulliganDone;
+
+                IAHS.TurnStart();
+            }
+
+
         }
 
 
