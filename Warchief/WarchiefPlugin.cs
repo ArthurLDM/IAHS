@@ -5,6 +5,7 @@ using Hearthstone_Deck_Tracker.API;
 using System.Windows;
 using Hearthstone_Deck_Tracker;
 using CoreAPI = Hearthstone_Deck_Tracker.API.Core;
+using Hearthstone_Deck_Tracker.Enums;
 using System.Drawing;
 using System.Windows.Input;
 using System.Windows.Forms;
@@ -33,14 +34,22 @@ namespace Warchief
         private bool gameStarted = false;
         private bool mulliganDone = false;
 
+
+        IAHS iahs = new IAHS();
+
         void IPlugin.OnButtonPress()
+        {
+            /*NOP*/
+        }
+
+        void IPlugin.OnUnload()
         {
             /*NOP*/
         }
 
         void IPlugin.OnLoad()
         {
-            //Hearthstone_Deck_Tracker.API.GameEvents.OnGameStart.Add();
+            #region Add KeyCommand
             if (keyCommands.Count == 0)
             {
                 // TODO it's probably possible to use delegates instead of simple function refs here
@@ -53,35 +62,43 @@ namespace Warchief
                 keyCommands.Add(new HotKey(Keys.X), this.Unselect);
             }
 
-            GameEvents.OnGameStart.Add(() => { gameStarted = true;  });
-            GameEvents.OnTurnStart.Add(a => IAHS.TurnStart());
-            GameEvents.OnGameEnd.Add(() =>
-            {
-                gameStarted = false;
-                IAHS.GameEnd();
-            });
+            #endregion
 
             mulliganDone = CoreAPI.Game.IsMulliganDone;
             gameStarted = mulliganDone && !CoreAPI.Game.IsInMenu;
 
+            GameEvents.OnGameStart.Add(() => 
+            {
+                gameStarted = true;
+                GameStart();
+                iahs.GameStart();
+            });
+
+            GameEvents.OnTurnStart.Add(a => iahs.TurnStart());
+
+            GameEvents.OnGameEnd.Add(() =>
+            {
+                gameStarted = false;
+                iahs.GameEnd();
+            });
+
+            //Cas ou on ouvre HDT dans une game lancée
             if (!mulliganDone)
-                IAHS.GameEnd();
+                iahs.GameEnd();
             else
-                IAHS.GameStart();
+                GameStart();
         }
 
-        void IPlugin.OnUnload()
-        {
-            /*NOP*/
-        }
+
+
 
         Action GameStart()
         {
-            try
-            {
+            if (mulliganDone)
+                currentModule = new TargetingDummy();
+            else
                 currentModule = new MulliganCommand();
-            }
-            catch (NullReferenceException e) { }
+
             return (null);
         }
 
@@ -92,6 +109,7 @@ namespace Warchief
 
         void IPlugin.OnUpdate()
         {
+            #region HotKeys
             if (!this.areHotkeysRegistered && User32.IsHearthstoneInForeground())
             {
                 foreach(KeyValuePair<HotKey, Action> keyCommand in this.keyCommands)
@@ -112,22 +130,24 @@ namespace Warchief
 
                 this.areHotkeysRegistered = false;
             }
+            #endregion
 
 
+            // Checking currentmodule
+            if (mulliganDone && currentModule.GetType() != typeof(TargetingDummy) && !CoreAPI.Game.IsInMenu)
+                currentModule = new TargetingDummy();
+
+            if (!mulliganDone && currentModule.GetType() != typeof(MulliganCommand) && !CoreAPI.Game.IsInMenu)
+                currentModule = new MulliganCommand();
 
             if (gameStarted)
             {
                 if (!mulliganDone && CoreAPI.Game.IsMulliganDone)
-                    IAHS.GameStart();
+                    GameStart();
+                   
                 mulliganDone = CoreAPI.Game.IsMulliganDone;
-
-                IAHS.TurnStart();
             }
-
-
         }
-
-
 
         private void SendCommand(InputCommand input)
         {

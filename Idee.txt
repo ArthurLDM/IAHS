@@ -1,0 +1,6 @@
+Copier le board adverse 
+Simulation de chaque tour 
+Selectionner le meilleur 
+
+Classe tour ?
+Classe action ?

@@ -16,5 +16,15 @@ namespace Warchief
         {
             InitializeComponent();
         }
+
+        internal void SetLabel(string S)
+        {
+            label1.Text = S;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Bravoooo Arthour";
+        }
     }
 }

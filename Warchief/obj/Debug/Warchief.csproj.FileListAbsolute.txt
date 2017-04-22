@@ -40,7 +40,6 @@ C:\Users\Thur\Desktop\Projet Info\Warchief\Warchief\obj\Debug\Warchief.dll
 C:\Users\Thur\Desktop\Projet Info\Warchief\Warchief\obj\Debug\Warchief.pdb
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\Warchief.dll
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\Warchief.pdb
-C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\HearthDb.dll
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\HearthMirror.dll
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\MahApps.Metro.dll
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\HSReplay.dll
