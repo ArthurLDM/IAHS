@@ -17,12 +17,22 @@ namespace Warchief
         int currentCardIndex=1;
 
 
-        public MulliganCommand(int cardnumber)
+        public MulliganCommand()
         {
             son = new TargetingDummy();
             FirstCardLocation = new WindowsPoint(50, 0);
+            getCardNumber();
             CreateCardList();
-            CardNumber = cardnumber;
+            
+        }
+
+
+        public void getCardNumber()
+        {
+            if (CoreAPI.Game.Player.HasCoin)
+                CardNumber = 4;
+            else
+                CardNumber = 3;
         }
 
         bool Down = false;
