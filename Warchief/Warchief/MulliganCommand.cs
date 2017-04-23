@@ -16,13 +16,16 @@ namespace Warchief
         private CommandModule son;
         int currentCardIndex=1;
 
-        public MulliganCommand()
+
+        public MulliganCommand(int cardnumber)
         {
             son = new TargetingDummy();
             FirstCardLocation = new WindowsPoint(50, 0);
             CreateCardList();
+            CardNumber = cardnumber;
         }
 
+        bool Down = false;
         public CommandModule Command(InputCommand input)
         {
             switch (input)
@@ -30,19 +33,17 @@ namespace Warchief
                 case InputCommand.Up:
                     break;
                 case InputCommand.Down:
-                    Cursor.Position = getAbsolutePos(new WindowsPoint(0, -60));
+                    Down = true;
                     break;
                 case InputCommand.Left:
                     navigate(currentCardIndex - 1);
-                    left();
                     break;
                 case InputCommand.Right:
                     navigate(currentCardIndex + 1);
-                    right();
                     break;
                 case InputCommand.Select:
                     click();
-                    return son;
+                    break;
                 case InputCommand.Unselect:
                     break;
             }
@@ -53,47 +54,30 @@ namespace Warchief
 
         private void updatePosition()
         {
-            Cursor.Position = getAbsolutePos(CardPos[currentCardIndex]);
+            if (!Down)
+                Cursor.Position = getAbsolutePos(CardPos[currentCardIndex]);
+            else
+            {
+                Cursor.Position = getAbsolutePos(new WindowsPoint(0, -60));
+                Down = false;
+            }
         }
 
-        private void left()
-        {
-            Cursor.Position = Cursor.Position = getAbsolutePos(new WindowsPoint(-50, -60));
-        }
-        private void right()
-        {
-            Cursor.Position = Cursor.Position = getAbsolutePos(new WindowsPoint(50, -60));
-        }
-
-        private int CardNumber=3;
+        internal int CardNumber;
         private static WindowsPoint FirstCardLocation;
 
         private void navigate(int newIndex)
         {
-            if (newIndex < 0 || newIndex >= 3)
+            if (newIndex < 0 || newIndex >= CardNumber+1)
             {
                 return;
             }
             currentCardIndex = newIndex;
         }
 
-        public void getCardNumber()
-        {
-            if (CoreAPI.Game.Player.HasCoin)
-            {
-                CardNumber = 4;
-                //FirstCardLocation = new WindowsPoint(-20, -20); // A changer
-            }
-            else
-            {
-                CardNumber = 3;
-                //FirstCardLocation = new WindowsPoint(-20, -40); // A changer
-            }
-        }
+        internal List<WindowsPoint> CardPos;
 
-        private List<WindowsPoint> CardPos;
-
-        private void CreateCardList()
+        internal void CreateCardList()
         {
             if (CardNumber==3)
             CardPos = new List<WindowsPoint> {
@@ -203,7 +187,6 @@ namespace Warchief
             Thread.Sleep(CLICK_SLEEP_TIME_MS);
             User32.mouse_event((uint)User32.MouseEventFlags.LeftUp, 0, 0, 0, UIntPtr.Zero);
             Thread.Sleep(CLICK_SLEEP_TIME_AFTER_MS);
-
         }
 
         private void rightClick()

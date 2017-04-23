@@ -17,7 +17,7 @@ namespace Warchief
     {
         static int TurnNum = 0;
         static Player CurrentPlayer;
-        Advisor A = new Advisor();
+        internal Advisor A = new Advisor();
 
 
         internal void GameStart()
@@ -42,7 +42,7 @@ namespace Warchief
                     name += OppBoard[i].LocalizedName + " - ";
             }
 
-            A.SetLabel(name);
+            //A.SetLabel(name);
 
         }
 

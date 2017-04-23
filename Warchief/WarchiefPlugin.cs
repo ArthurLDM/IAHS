@@ -90,15 +90,22 @@ namespace Warchief
         }
 
 
-
+        public int getCardNumber()
+        {
+            int CardNumber;
+            if (CoreAPI.Game.Player.HasCoin)
+                CardNumber = 4;
+            else
+                CardNumber = 3;
+            return (CardNumber);
+        }
 
         Action GameStart()
         {
             if (mulliganDone)
                 currentModule = new TargetingDummy();
             else
-                currentModule = new MulliganCommand();
-
+                currentModule = new MulliganCommand(getCardNumber());
             return (null);
         }
 
@@ -132,13 +139,28 @@ namespace Warchief
             }
             #endregion
 
+            if (currentModule.GetType() == typeof(MulliganCommand))
+            {
+
+
+                MulliganCommand I = (MulliganCommand)currentModule;
+
+                I.CardNumber = getCardNumber();
+                I.CreateCardList();
+                currentModule = (CommandModule)I;
+                iahs.A.SetLabel(I.CardPos.Count.ToString() + I.CardNumber.ToString());
+
+
+                
+            }
+
 
             // Checking currentmodule
             if (mulliganDone && currentModule.GetType() != typeof(TargetingDummy) && !CoreAPI.Game.IsInMenu)
                 currentModule = new TargetingDummy();
 
             if (!mulliganDone && currentModule.GetType() != typeof(MulliganCommand) && !CoreAPI.Game.IsInMenu)
-                currentModule = new MulliganCommand();
+                currentModule = new MulliganCommand(getCardNumber());
 
             if (gameStarted)
             {
