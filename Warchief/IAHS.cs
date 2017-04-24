@@ -15,20 +15,36 @@ namespace Warchief
 {
     class IAHS
     {
-        static int TurnNum = 0;
+        static int TurnNum;
+        static Player FirstPlayer;
         static Player CurrentPlayer;
-        internal Advisor A = new Advisor();
+        internal Advisor A= new Advisor();
+
+
+        internal BoardRegionNavigation Hand= new HandNavigator();
 
 
         internal void GameStart()
         {
+            TurnNum = 0;
+            A = new Advisor();
             A.Show();
         }
 
         internal void TurnStart()
         {
-            SetCurrentPlayer();
-
+            if (TurnNum == 0)
+            {
+                SetFirstPlayer();
+                CurrentPlayer = FirstPlayer;
+                TurnNum = 1;
+            }
+            else
+            {
+                SetCurrentPlayer();
+                if(CurrentPlayer==FirstPlayer)
+                    TurnNum++;
+            }
 
             List<Entity> OppBoard = CoreAPI.Game.Opponent.Board.Where(x => x.IsMinion).OrderBy(x => x.GetTag(GameTag.ZONE_POSITION)).ToList();
             List<int> Targets = FindTarget(OppBoard);
@@ -42,17 +58,22 @@ namespace Warchief
                     name += OppBoard[i].LocalizedName + " - ";
             }
 
-            //A.SetLabel(name);
+
+            A.SetLabel(CurrentPlayer.Name + TurnNum.ToString());
+
+        }
+
+        internal void SetFirstPlayer()
+        {
+            if (CoreAPI.Game.Player.HasCoin)
+                FirstPlayer = CoreAPI.Game.Opponent;
+            if (CoreAPI.Game.Opponent.HasCoin)
+                FirstPlayer = CoreAPI.Game.Player;
 
         }
 
         internal void SetCurrentPlayer()
         {
-            if (TurnNum == 0 && CoreAPI.Game.Player.GoingFirst)
-                CurrentPlayer = CoreAPI.Game.Player;
-            if (TurnNum == 0 && CoreAPI.Game.Opponent.GoingFirst)
-                CurrentPlayer = CoreAPI.Game.Opponent;
-
             if (CurrentPlayer == CoreAPI.Game.Player)
                 CurrentPlayer = CoreAPI.Game.Opponent;
             else
@@ -75,10 +96,48 @@ namespace Warchief
             return (TauntPos);
         }
 
-
         internal void GameEnd()
         {
             A.Hide();
+        }
+
+        internal void OnCurveMinon()
+        {
+            int HandSize = CoreAPI.Game.Player.HandCount;
+            int BoardSize = CoreAPI.Game.Player.Board.Count();
+
+            int PosInHand = -1;
+            int index = 0;
+
+            if (BoardSize < 7)
+            {
+                foreach (Entity Card in CoreAPI.Game.Player.Hand)
+                {
+
+                    
+                }
+            }
+            else
+                EndTurn();
+
+
+            //Go through the hand
+            //If coresponding minons
+            //get hand on the minon
+            // select
+            // Get Hand to Board
+            // Select
+
+        }
+
+        internal void EndTurn()
+        {
+            // get hand to end turn button
+            // select
+        }
+        internal void PlayCard(int PosInHand)
+        {
+
         }
 
     }

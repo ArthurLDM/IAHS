@@ -131,33 +131,43 @@ namespace Warchief
             }
             #endregion
 
-            //Ici, on met a jour le CardNumber et les cardPos 
-            //Car Player.HasCoin=false puis est mis a jour 
-            if (currentModule.GetType() == typeof(MulliganCommand))
-            {
-                MulliganCommand I = (MulliganCommand)currentModule;
-
-                I.getCardNumber();
-                I.CreateCardList();
-                currentModule = (CommandModule)I;
-            }
-
-
-            // Checking currentmodule
-            //Si on ouvre HDT pendant une game
-            if (mulliganDone && currentModule.GetType() != typeof(TargetingDummy) && !CoreAPI.Game.IsInMenu)
-                currentModule = new TargetingDummy();
-
-            if (!mulliganDone && currentModule.GetType() != typeof(MulliganCommand) && !CoreAPI.Game.IsInMenu)
-                currentModule = new MulliganCommand();
-
             if (gameStarted)
             {
+                //Ici, on met a jour le CardNumber et les cardPos 
+                //Car Player.HasCoin=false puis est mis a jour 
+                if (currentModule.GetType() == typeof(MulliganCommand))
+                {
+                    MulliganCommand I = (MulliganCommand)currentModule;
+
+                    I.getCardNumber();
+                    I.CreateCardList();
+                    currentModule = (CommandModule)I;
+                }
+
+                if (currentModule.GetType() == typeof(TargetingDummy))
+                {
+                    TargetingDummy I = (TargetingDummy)currentModule;
+                    iahs.Hand = I.regions[4];
+                }
+
+
+                // Checking currentmodule
+                //Si on ouvre HDT pendant une game
+                if (mulliganDone && currentModule.GetType() != typeof(TargetingDummy))
+                    currentModule = new TargetingDummy();
+
+                if (!mulliganDone && currentModule.GetType() != typeof(MulliganCommand))
+                    currentModule = new MulliganCommand();
+
+
                 if (!mulliganDone && CoreAPI.Game.IsMulliganDone)
                     GameStart();
 
                 mulliganDone = CoreAPI.Game.IsMulliganDone;
+
             }
+
+
         }
 
         private void SendCommand(InputCommand input)

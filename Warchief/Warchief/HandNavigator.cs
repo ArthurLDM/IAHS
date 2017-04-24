@@ -10,7 +10,7 @@ namespace Warchief
     internal class HandNavigator : BoardRegionNavigation
     {
         private static WindowsPoint handCenterDefault = new WindowsPoint(0, -90);
-        private static List<List<WindowsPoint>> handLocations;
+        internal static List<List<WindowsPoint>> handLocations;
         MinionPlacementCommand minionPlacement = new MinionPlacementCommand();
 
         private int handIndex;

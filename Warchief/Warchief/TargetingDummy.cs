@@ -17,7 +17,7 @@ namespace Warchief
     class TargetingDummy : CommandModule
     {
         //TODO: this would be a bit cleaner if it was a doubly-linked list instead of array/idx
-        private List<BoardRegionNavigation> regions;
+        internal List<BoardRegionNavigation> regions;
         int currentRegionIndex;        
 
         public TargetingDummy()
