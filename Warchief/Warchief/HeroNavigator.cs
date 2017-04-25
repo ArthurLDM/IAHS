@@ -7,8 +7,8 @@ namespace Warchief
 {
     internal class HeroNavigator : BoardRegionNavigation
     {
-        private static WindowsPoint playerHeroLocation = new WindowsPoint(0, -60);
-        private static WindowsPoint playerHeroPowerLocation = new WindowsPoint(33, -60);
+        internal WindowsPoint playerHeroLocation = new WindowsPoint(0, -60);
+        internal WindowsPoint playerHeroPowerLocation = new WindowsPoint(33, -60);
 
         private bool targetIsHero;
 

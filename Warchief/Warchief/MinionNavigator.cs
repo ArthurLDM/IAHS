@@ -18,9 +18,9 @@ namespace Warchief
 
         private int minionIndex;
 
-        private static WindowsPoint opponentMinionRowLocation = new WindowsPoint(0, 20);
-        private static WindowsPoint playerMinionRowLocation = new WindowsPoint(0, -20);
-        private static WindowsPoint endTurnLocation = new WindowsPoint(112, 0);
+        internal WindowsPoint opponentMinionRowLocation = new WindowsPoint(0, 20);
+        internal WindowsPoint playerMinionRowLocation = new WindowsPoint(0, -20);
+        internal WindowsPoint endTurnLocation = new WindowsPoint(112, 0);
 
         private static double MINION_OFFSET = 26.0;
 

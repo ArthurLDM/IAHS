@@ -4,3 +4,6 @@ Selectionner le meilleur
 
 Classe tour ?
 Classe action ?
+
+Savoir on peut jouer --> récuperer la couleur autour de la carte 
+Si vert --> ok 

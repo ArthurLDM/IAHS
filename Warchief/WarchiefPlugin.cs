@@ -74,7 +74,9 @@ namespace Warchief
                 iahs.GameStart();
             });
 
+            GameEvents.OnTurnStart.Add(a => TurnStart());
             GameEvents.OnTurnStart.Add(a => iahs.TurnStart());
+
 
             GameEvents.OnGameEnd.Add(() =>
             {
@@ -89,7 +91,11 @@ namespace Warchief
                 GameStart();
         }
 
-
+        void TurnStart()
+        {
+            TargetingDummy T =(TargetingDummy)currentModule;
+            iahs.regions = T.regions;
+        }
         
 
         Action GameStart()
@@ -147,7 +153,7 @@ namespace Warchief
                 if (currentModule.GetType() == typeof(TargetingDummy))
                 {
                     TargetingDummy I = (TargetingDummy)currentModule;
-                    iahs.Hand = I.regions[4];
+                    iahs.regions = I.regions;
                 }
 
 
@@ -164,9 +170,10 @@ namespace Warchief
                     GameStart();
 
                 mulliganDone = CoreAPI.Game.IsMulliganDone;
+               
 
             }
-
+            iahs.GameData();
 
         }
 
