@@ -1,40 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
+using WindowsPoint = System.Windows.Point;
+using System.Threading;
+
+using Hearthstone_Deck_Tracker;
 using Hearthstone_Deck_Tracker.Plugins;
 using Hearthstone_Deck_Tracker.API;
-using System.Windows;
-using Hearthstone_Deck_Tracker;
 using CoreAPI = Hearthstone_Deck_Tracker.API.Core;
-using Hearthstone_Deck_Tracker.Enums;
-using System.Drawing;
-using System.Windows.Input;
-using System.Windows.Forms;
-using Cursor = System.Windows.Forms.Cursor;
-using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using KeyEventHandler = System.Windows.Input.KeyEventHandler;
 using Hearthstone_Deck_Tracker.Utility.HotKeys;
-using Hearthstone_Deck_Tracker.Exporting;
-using System.Threading;
 
 namespace Warchief
 {
     public class Warchief : IPlugin
     {
-        public string Name => "Warchief";
+
+
+        public string Name => "IAHS & Warchief";
         public string Description
             =>
-                "Lok-regar no'gall!\n\nUse your keyboard or gamepad to play Hearthstone.\n\n~[+--oo]\n";
+                "\n\nUse your keyboard or gamepad to play Hearthstone. && IAHS tests\n\n\n";
 
         public string ButtonText => "DO NOT PUSH THIS BUTTON!";
-        public string Author => "realchriscasey";
-        public Version Version => new Version(0, 6, 0);
+        public string Author => "realchriscasey && Thur";
+        public Version Version => new Version(0, 0, 1);
         public System.Windows.Controls.MenuItem MenuItem => null;
 
 
+        internal Mode Choix = new Mode();
+
         private bool gameStarted = false;
         private bool mulliganDone = false;
-
-
         IAHS iahs = new IAHS();
 
         void IPlugin.OnButtonPress()
@@ -75,7 +71,8 @@ namespace Warchief
             });
 
             GameEvents.OnTurnStart.Add(a => TurnStart());
-            GameEvents.OnTurnStart.Add(a => iahs.TurnStart());
+            GameEvents.OnTurnStart.Add(iahs.TurnStart);
+            
 
 
             GameEvents.OnGameEnd.Add(() =>
@@ -100,10 +97,10 @@ namespace Warchief
 
         Action GameStart()
         {
-            if (mulliganDone)
-                currentModule = new TargetingDummy();
-            else
+            if (!mulliganDone)
                 currentModule = new MulliganCommand();
+            else
+                currentModule = new TargetingDummy();
             return (null);
         }
 
@@ -137,8 +134,12 @@ namespace Warchief
             }
             #endregion
 
+            if (!Choix.Visible)
+                Choix.Show();
             if (gameStarted)
             {
+                if (!iahs.A.Visible)
+                    iahs.A.Show();
                 //Ici, on met a jour le CardNumber et les cardPos 
                 //Car Player.HasCoin=false puis est mis a jour 
                 if (currentModule.GetType() == typeof(MulliganCommand))
@@ -170,11 +171,16 @@ namespace Warchief
                     GameStart();
 
                 mulliganDone = CoreAPI.Game.IsMulliganDone;
-               
 
+                iahs.A.SetLabel(iahs.turn.Debug());
+                if (iahs.turn.Actions.Count != 0)
+                    if (Choix.BotRB_Checked()) // si est pas endturn && on a active le bot mode
+                    {
+                        Thread.Sleep(5000);
+                        iahs.ExecuteTurn(iahs.turn);
+                    }
+                iahs.A.SetLabel(iahs.turn.Debug());
             }
-            iahs.GameData();
-
         }
 
         private void SendCommand(InputCommand input)

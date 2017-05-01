@@ -52,7 +52,7 @@ namespace Warchief
             return minionLocation(minionIndex);
         }
 
-        private WindowsPoint minionLocation(int minionIndex)
+        internal WindowsPoint minionLocation(int minionIndex)
         {
             int minionCount = getMinionCount();
 

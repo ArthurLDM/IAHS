@@ -13,43 +13,65 @@ namespace Warchief
     internal class MulliganCommand : CommandModule
     {
 
-        private CommandModule son;
-        int currentCardIndex=1;
+        internal int CardNumber;
+        int currentCardIndex = 1; //Permet de savoir quelle carte le joueur est entrain de consulter 
+        private static WindowsPoint FirstCardLocation =new WindowsPoint(0, -65); //place le curseur sur le bouton confirm lors du déubt du mulligan.
+        internal List<WindowsPoint> CardPos; //contient la liste de la position des cartes proposée au joueur (3 cartes si le joueur commence, 4 sinon) 
+
+        bool Down = false; // permet de savoir si le joueur a appuyé sur la touche bas (pour atteindre le bouton confirmer)
 
 
+        //initialisation de l'objet
         public MulliganCommand()
         {
-            son = new TargetingDummy();
-            FirstCardLocation = new WindowsPoint(50, 0);
+            Cursor.Position = getAbsolutePos(FirstCardLocation);
             getCardNumber();
             CreateCardList();
-            
         }
-
+        
 
         public void getCardNumber()
         {
-            if (CoreAPI.Game.Player.HasCoin)
+            if (CoreAPI.Game.Player.HasCoin) // le joueur qui joue en deuxième possède la piece
                 CardNumber = 4;
             else
                 CardNumber = 3;
         }
 
-        bool Down = false;
+        internal void CreateCardList()
+        {
+            if (CardNumber == 3)
+                CardPos = new List<WindowsPoint> {
+                new WindowsPoint(-60,0),
+                new WindowsPoint(0,0),
+                new WindowsPoint(60,0)};
+            else
+                CardPos = new List<WindowsPoint> {
+                new WindowsPoint(-60,0),
+                new WindowsPoint(-20,0),
+                new WindowsPoint(20,0),
+                new WindowsPoint(60,0)};
+        }
+
+
+        //Gestion des inputs 
         public CommandModule Command(InputCommand input)
         {
             switch (input)
             {
                 case InputCommand.Up:
+                    Down = false;
                     break;
                 case InputCommand.Down:
                     Down = true;
                     break;
                 case InputCommand.Left:
-                    navigate(currentCardIndex - 1);
+                    if( !Down) // tant que l'on est sur le bouton Confirmer, on ne peut pas naviguer entre les cartes
+                        navigate(currentCardIndex - 1);
                     break;
                 case InputCommand.Right:
-                    navigate(currentCardIndex + 1);
+                    if (!Down) // tant que l'on est sur le bouton Confirmer, on ne peut pas naviguer entre les cartes
+                        navigate(currentCardIndex + 1);
                     break;
                 case InputCommand.Select:
                     click();
@@ -62,59 +84,27 @@ namespace Warchief
             return this;
         }
 
-        private void updatePosition()
-        {
-            if (!Down)
-                Cursor.Position = getAbsolutePos(CardPos[currentCardIndex]);
-            else
-            {
-                Cursor.Position = getAbsolutePos(new WindowsPoint(0, -60));
-                Down = false;
-            }
-        }
-
-        internal int CardNumber;
-        private static WindowsPoint FirstCardLocation;
 
         private void navigate(int newIndex)
         {
-            if (newIndex < 0 || newIndex >= CardNumber+1)
+            if (newIndex < 0 || newIndex >= CardNumber + 1)
             {
                 return;
             }
             currentCardIndex = newIndex;
         }
 
-        internal List<WindowsPoint> CardPos;
 
-        internal void CreateCardList()
+        private void updatePosition()
         {
-            if (CardNumber==3)
-            CardPos = new List<WindowsPoint> {
-                new WindowsPoint(-60,0),
-                new WindowsPoint(0,0),
-                new WindowsPoint(60,0)};
+            if (!Down)
+                Cursor.Position = getAbsolutePos(CardPos[currentCardIndex]);
             else
-                CardPos = new List<WindowsPoint> {
-                new WindowsPoint(-60,0),
-                new WindowsPoint(-20,0),
-                new WindowsPoint(20,0),
-                new WindowsPoint(60,0)};
-
+                Cursor.Position = getAbsolutePos(new WindowsPoint(0, -65));
         }
 
 
-        public bool setCard(int card)
-        {
-            if (card < 0 || card >= CardNumber)
-                return false;
-
-            currentCardIndex = card;
-            WindowsPoint location = CardPos[currentCardIndex];
-            Cursor.Position = getAbsolutePos(location);
-            return true;
-        }
-
+        #region Navigation
         /* `ALGALON` coordinate system for hearthstone */
 
         /* define the center of board as (0,0). */
@@ -211,5 +201,6 @@ namespace Warchief
         {
             return;
         }
+#endregion
     }
 }

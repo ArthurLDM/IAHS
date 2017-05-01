@@ -58,7 +58,6 @@ C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\DeltaC
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\Mono.Cecil.dll
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\XAMLMarkupExtensions.dll
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\DeltaCompressionDotNet.dll
-C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\HearthDb.pdb
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\HearthstoneDeckTracker.exe.config
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\de-DE\HearthstoneDeckTracker.resources.dll
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\fr-FR\HearthstoneDeckTracker.resources.dll
@@ -69,7 +68,12 @@ C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\ru-RU\
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\zh-CN\HearthstoneDeckTracker.resources.dll
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\zh-TW\HearthstoneDeckTracker.resources.dll
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\obj\Debug\Warchief.csprojResolveAssemblyReference.cache
-C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\obj\Debug\Warchief.Advisor.resources
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\obj\Debug\Warchief.csproj.GenerateResource.Cache
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\obj\Debug\Warchief.dll
 C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\obj\Debug\Warchief.pdb
+C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\HearthDb.dll
+C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\HearthstoneDeckTracker.exe
+C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\bin\Debug\uk-UA\HearthstoneDeckTracker.resources.dll
+C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\obj\Debug\Warchief.Mode.resources
+C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\obj\Debug\Warchief.Properties.Resources.resources
+C:\Users\Thur\Desktop\Projet Info\Warchief\Projet-Info\Warchief\obj\Debug\Warchief.DebugWindow.resources

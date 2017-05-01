@@ -18,239 +18,79 @@ using DrawingPoint = System.Drawing.Point;
 using System.Drawing;
 
 
+
+
 namespace Warchief
 {
     class IAHS
     {
-        static int TurnNum;
-        static Player FirstPlayer;
-        static Player CurrentPlayer;
-        internal Advisor A = new Advisor();
+
+        internal DebugWindow A = new DebugWindow();
         internal int mana = 0; // le mana représente le nombre de cristaux de mana en plus que ceux que le joueur devrait avoir
-        // permet de gerer coin, innervation, croissance sauvage, nourrish ...
+                               // permet de gerer coin, innervation, croissance sauvage, nourrish ...
+
+        internal List<Entity> Entities =>
+        Helper.DeepClone<Dictionary<int, Entity>>(CoreAPI.Game.Entities).Values.ToList<Entity>();
+
+        internal Entity Opponent => Entities?.FirstOrDefault(x => x.IsOpponent);
+        internal Entity Player => Entities?.FirstOrDefault(x => x.IsPlayer);
+
+        internal Turn turn;
 
         internal List<BoardRegionNavigation> regions;
 
+
         internal IAHS()
-            {
+        {
             regions = new List<BoardRegionNavigation>{
                      new OpponentNavigator(),
                      new MinionNavigator(false),
                      new MinionNavigator(true),
                      new HeroNavigator(),
                      new HandNavigator() };
-
-            }
+            turn = new Turn();
+        }
 
         internal void GameStart()
         {
-            TurnNum = 0;
-            A = new Advisor();
+            A = new DebugWindow();
             A.Show();
-        }
+            turn = new Turn();
 
-        internal void TurnStart()
+    }
+
+    internal void TurnStart(ActivePlayer player)
         {
-            if (TurnNum == 0)
-            {
-                SetFirstPlayer();
-                CurrentPlayer = FirstPlayer;
-                TurnNum = 1;
-                mana = TurnNum;
-
-            }
-            else
-            {
-                SetCurrentPlayer();
-                if (CurrentPlayer == FirstPlayer)
-                {
-                    TurnNum++;
-                    mana=TurnNum;
-                }
-            }
-
-            List<Entity> OppBoard = CoreAPI.Game.Opponent.Board.Where(x => x.IsMinion).OrderBy(x => x.GetTag(GameTag.ZONE_POSITION)).ToList();
-            List<int> Targets = FindTarget(OppBoard);
-
-            string name = "";
-            if (Targets.Count == 0)
-                name += CoreAPI.Game.Opponent.Name;
-            else
-            {
-                foreach (int i in Targets)
-                    name += OppBoard[i].LocalizedName + " - ";
-            }
-
-            //A.SetLabel(name);
-
-            if (CurrentPlayer == CoreAPI.Game.Player)
-            {
-                GameData();
-                OnCurveMinon();
-            }
+                turn = new Turn();
+                turn.MakeTurn();
         }
 
-        internal void SetFirstPlayer()
-        {
-            if (CoreAPI.Game.Player.HasCoin)
-                FirstPlayer = CoreAPI.Game.Opponent;
-            if (CoreAPI.Game.Opponent.HasCoin)
-                FirstPlayer = CoreAPI.Game.Player;
-
-        }
-
-        internal void SetCurrentPlayer()
-        {
-            if (CurrentPlayer == CoreAPI.Game.Player)
-                CurrentPlayer = CoreAPI.Game.Opponent;
-            else
-                CurrentPlayer = CoreAPI.Game.Player;
-        }
-
-        internal List<int> FindTarget(IEnumerable<Entity> oppBoard)
-        {
-            List<int> TauntPos = new List<int>();
-            int i = 0;
-            foreach(var e in oppBoard)
-            {
-                if (e.IsInPlay)
-                {
-                    if (e.GetTag(GameTag.TAUNT) == 1)
-                        TauntPos.Add(i);
-                    i++;
-                }
-            }
-            return (TauntPos);
-        }
+        
 
         internal void GameEnd()
         {
-            A.Hide();
+            //A.Hide();
         }
 
-        internal bool PlayableCard()
+        internal void ExecuteTurn(Turn turn)
         {
-            GameData();
-
-            if (Hand.Count() == 0)
-                return (false);
-            else
-            {
-                int min = 100;
-                foreach (Entity Card in Hand)
-                {
-                    if (Card.Cost < min && Card.Cost<mana && Card.IsMinion)
-                        min = Card.Cost;
-                }
-                return (min!=100);
-            }
-        }
-
-        internal List<int> PlayableCards()
-        {
-            List<int> Cards = new List<int>();
             int index = 0;
 
-            foreach (Entity Card in Hand)
+            foreach (List<WindowsPoint> action in turn.Actions)
             {
-                if (Card.Cost < mana)
-                    Cards.Add(index);
-                index++;
-            }
-
-            return (Cards);
-
-        }
-
-        int BoardSize = CoreAPI.Game.Player.Board.Count();
-        IEnumerable<Entity> Hand = CoreAPI.Game.Player.Hand;
-
-        internal void GameData()
-        {
-            BoardSize = CoreAPI.Game.Player.Board.Count();
-            Hand = CoreAPI.Game.Player.Hand;
-            //A.SetLabel(Hand.Count().ToString());
-
-        }
-
-
-        internal void OnCurveMinon()
-        {
-
-
-            while (BoardSize < 7 && PlayableCards().Count() != 0)
-            {
-                int index = 0;
-                GameData();
-                int cost = Hand.ToList()[index].Cost;
-
-
-
-                /*
-                foreach (Entity Card in Hand)
+                foreach (WindowsPoint Position in action)
                 {
-                    if (Card.Cost <= TurnNum && Card.IsMinion)
-                    {
-                        PosInHand = index;
-                        cost = Card.Cost;
-                    }
-
-                    index++;
+                    Thread.Sleep(1000);
+                    Cursor.Position = getAbsolutePos(Position);
+                    Thread.Sleep(1000);
+                    click();
                 }
-                */
-                //if (PosInHand != -1)
-                PlayMinion(PlayableCards()[index], cost);
+                turn.Actions.RemoveAt(index);
                 index++;
             }
-
-            if (mana>1)
-                HeroPower();
-
-            EndTurn();
-
         }
 
-        internal void HeroPower()
-        {
-            mana -= 2;
-
-            Thread.Sleep(10000);
-            HeroNavigator HeroPower = (HeroNavigator)regions[3];
-            WindowsPoint Position = HeroPower.playerHeroPowerLocation;
-            Cursor.Position = getAbsolutePos(Position);
-            click();
-        }
-
-        internal void EndTurn()
-        {
-            Thread.Sleep(5000);
-            MinionNavigator EndTurn = (MinionNavigator)regions[1];
-            WindowsPoint Position = EndTurn.endTurnLocation;
-            Cursor.Position = getAbsolutePos(Position);
-            click();
-        }
-
-        internal void PlayMinion(int PosInHand, int cost)
-        {
-
-            mana -= cost;
-            Thread.Sleep(3000);
-            GameData();
-            HandNavigator hand = (HandNavigator)regions[4];
-
-            WindowsPoint Position = hand.handLocations[Hand.Count()][PosInHand];
-            Cursor.Position = getAbsolutePos(Position);
-            click();
-
-            Thread.Sleep(3000);
-            MinionNavigator Board = (MinionNavigator)regions[2];
-            Position = Board.playerMinionRowLocation;
-            Cursor.Position = getAbsolutePos(Position);
-            click();
-        }
-
-
-#region Navigation
+        #region Navigation
 
         /* `ALGALON` coordinate system for hearthstone */
 
@@ -317,10 +157,8 @@ namespace Warchief
         private WindowsPoint getCanvasPos(DrawingPoint absolutePos)
         {
             Rectangle wrecked = User32.GetHearthstoneRect(false);
-
             double y = absolutePos.Y - wrecked.Top;
             double x = absolutePos.X - wrecked.Left;
-
             return new WindowsPoint(x, y);
         }
         */
@@ -348,6 +186,110 @@ namespace Warchief
         {
             return;
         }
-#endregion
+        #endregion
     }
+
+
+    //    class IAHS
+    //    {
+
+    //        internal DebugWindow A = new DebugWindow();
+
+    //        internal List<BoardRegionNavigation> regions;
+
+
+    //        internal List<Entity> Entities =>
+    //    Helper.DeepClone<Dictionary<int, Entity>>(CoreAPI.Game.Entities).Values.ToList<Entity>();
+
+    //        internal Entity Opponent => Entities?.FirstOrDefault(x => x.IsOpponent);
+    //        internal Entity Player => Entities?.FirstOrDefault(x => x.IsPlayer);
+
+    //        internal Turn turn;
+
+    //        internal IAHS()
+    //            {
+    //            regions = new List<BoardRegionNavigation>{
+    //                     new OpponentNavigator(),
+    //                     new MinionNavigator(false),
+    //                     new MinionNavigator(true),
+    //                     new HeroNavigator(),
+    //                     new HandNavigator() };
+    //            turn = new Turn();
+    //            }
+
+    //        internal void GameStart()
+    //        {
+    //            A = new DebugWindow();
+    //            A.Show();
+
+    //            HandNavigator handnavigator = new HandNavigator();
+    //            WindowsPoint position =handnavigator.handLocations[6][4];
+    //        }
+
+
+    //        internal void TurnStart(ActivePlayer player)
+    //        {
+
+    //            if (player == ActivePlayer.Player && Opponent != null)
+    //            {
+    //                List<Entity> OppBoard = CoreAPI.Game.Opponent.Board.Where(x => x.IsMinion).OrderBy(x => x.GetTag(GameTag.ZONE_POSITION)).ToList();
+    //                List<int> Targets = FindTarget(OppBoard);
+
+    //                string name = "";
+    //                if (Targets.Count == 0)
+    //                    name += CoreAPI.Game.Opponent.Name;
+    //                else
+    //                {
+    //                    foreach (int i in Targets)
+    //                        name += OppBoard[i].LocalizedName + " - ";
+    //                }
+
+    //                turn = new Turn();
+    //                turn.MakeTurn();
+    //            }
+
+    //        }
+
+    //        internal void ExecuteTurn(Turn turn)
+    //        {
+    //            int index = 0;
+
+    //            foreach (List<WindowsPoint> action in turn.Action)
+    //            {
+    //                foreach (WindowsPoint Position in action)
+    //                {
+    //                    Thread.Sleep(4000);
+    //                    Cursor.Position = getAbsolutePos(Position);
+    //                    Thread.Sleep(1000);
+    //                    click();
+    //                }
+    //                turn.Action.RemoveAt(index);
+    //                index++;
+    //            }
+    //        }
+
+    //        internal List<int> FindTarget(IEnumerable<Entity> oppBoard)
+    //        {
+    //            List<int> TauntPos = new List<int>();
+    //            int i = 0;
+    //            foreach(var e in oppBoard)
+    //            {
+    //                if (e.IsInPlay)
+    //                {
+    //                    if (e.GetTag(GameTag.TAUNT) == 1)
+    //                        TauntPos.Add(i);
+    //                    i++;
+    //                }
+    //            }
+    //            return (TauntPos);
+    //        }
+
+    //        internal void GameEnd()
+    //        {
+    //            A.Hide();
+    //            turn = new Turn();
+    //        }
+
+   
+    //    }
 }
