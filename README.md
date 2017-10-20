@@ -13,5 +13,5 @@ This project does not have for purpose to be published or used by anyone other t
 It's only made for coding performance purposes and to play against the inkeeper. 
 If you decide to use it, it is at your own risk and I do not take any responsability for it.
 
+The comments might be in french, so if there is something I cant help with... go for it. 
 Feel free to contact me if you have any question 
-
