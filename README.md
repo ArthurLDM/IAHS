@@ -3,7 +3,7 @@ I empahsize on IN PROGRESS.
 The IA is a Heathstone Deck Tracker Plugin that uses the Warchief plugin that I adapted to the need of the project.
 
 To run the IA, you need to intall : 
-Hearthstone - https://playhearthstone.com
+Hearthstone - https://playhearthstone.com 
 Hearthstone Deck Tracker - https://hsdecktracker.net/
 
 Then run compile the code of IAHS and follow this tutroial to install the plugin : 
